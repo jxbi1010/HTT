@@ -1,0 +1,17 @@
+# Tactile Fusion — runtime dependencies (inference + finetune).
+# Tested with Python 3.10 / 3.11 and PyTorch 2.x + CUDA.
+
+# Core
+torch>=2.0.0
+torchvision>=0.15.0     # ResNet backbone imported by model.create_model
+timm>=1.0.0             # ViT blocks in the shared trunk
+einops>=0.6.0           # tensor ops in the ViT / patch embed
+
+# Config + IO
+PyYAML>=6.0
+omegaconf>=2.3.0
+numpy>=1.24.0
+Pillow>=9.0.0           # loading vision background / input frames
+
+# Finetuning only (finetune_mae.py)
+tensorboard>=2.12.0

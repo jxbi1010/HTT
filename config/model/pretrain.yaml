@@ -1,0 +1,90 @@
+# MAE Pretraining Model Configuration
+# Multimodal model with 4 encoders (xela, 9dtact, gsmini, tac02), shared trunk, and 4 decoders
+
+hidden_dim: 192
+num_heads: 3  # Default number of heads (can be overridden per encoder/decoder)
+encoder_depth: 3  # Default depth (can be overridden per encoder/decoder)
+decoder_depth: 3  # Default depth (can be overridden per encoder/decoder)
+
+# Encoder configurations
+encoders:
+    
+  xela:
+    type: 'transformer'  # Tactile encoder for xela
+    tactile_dim: 72
+    patch_size: 4
+    stride: 4
+    transformer_layers: ${encoder_depth}
+    num_heads: ${num_heads}
+    hidden_dim: ${hidden_dim}
+    mask_ratio: 0.6 # v4 default (was 0.4 in v1; raised in v2+)
+
+  tac02:
+    type: 'transformer'  # Tactile encoder for tac02
+    tactile_dim: 66
+    patch_size: 4
+    stride: 4
+    transformer_layers: ${encoder_depth}
+    num_heads: ${num_heads}
+    hidden_dim: ${hidden_dim}
+    mask_ratio: 0.6  # v4 default (was 0.4 in v1; raised in v2+)
+
+  9dtact:
+    type: 'vit'  # Vision encoder for 9dtact
+    num_frames: 2
+    tubelet_size: 2
+    hidden_dim: ${hidden_dim}
+    num_layers: ${encoder_depth}  # encoder_depth (matching vit.yaml)
+    num_heads: ${num_heads}    # encoder_heads (matching vit.yaml)
+    model_size: 'custom'  # Options: 'tiny(192,3)', 'small(384,6)', 'base(768,12)', 'large(1024,16)', or 'custom'
+    mask_ratio: 0.75  # Per-encoder mask ratio (required for each encoder)
+
+  gsmini:
+    type: 'vit'  # Vision encoder for gsmini
+    num_frames: 2  # Sample 2 frames from 5 available for gelsight
+    tubelet_size: 2
+    hidden_dim: ${hidden_dim}
+    num_layers: ${encoder_depth}  # encoder_depth
+    num_heads: ${num_heads}    # encoder_heads
+    model_size: 'custom'  # Options: 'tiny(192,3)', 'small(384,6)', 'base(768,12)', 'large(1024,16)', or 'custom'
+    mask_ratio: 0.75  # Per-encoder mask ratio (required for each encoder)
+
+
+
+
+# Shared trunk configuration
+shared_trunk:
+  embed_dim: ${hidden_dim}  # Uses hidden_dim variable
+  depth: 9
+  num_heads: ${num_heads}  # Uses num_heads variable
+  pooling_type: 'none'  # 'none' for MAE compatibility
+
+
+# Decoder configurations (one for each encoder)
+decoders:
+
+  xela:
+    decoder_type: 'transformer'  # Tactile decoder for xela
+    decoder_embed_dim: ${hidden_dim}  # Decoder embedding dimension
+    decoder_depth: ${decoder_depth}  # Number of decoder transformer blocks
+    decoder_num_heads: ${num_heads}  # Number of attention heads in decoder
+
+  tac02:
+    decoder_type: 'transformer'  # Tactile decoder for tac02
+    decoder_embed_dim: ${hidden_dim}  # Decoder embedding dimension
+    decoder_depth: ${decoder_depth}  # Number of decoder transformer blocks
+    decoder_num_heads: ${num_heads}  # Number of attention heads in decoder
+
+
+  9dtact:
+    decoder_type: 'vit'
+    decoder_depth: ${decoder_depth}
+    decoder_num_heads: ${num_heads}
+
+  gsmini:
+    decoder_type: 'vit'
+    decoder_depth: ${decoder_depth}
+    decoder_num_heads: ${num_heads}
+
+
+

@@ -1,0 +1,40 @@
+HTT — Heterogeneous Tactile Transformer
+Copyright (c) 2026 the HTT authors.
+
+This work is released under the Creative Commons Attribution-NonCommercial 4.0
+International License (CC BY-NC 4.0). See the LICENSE file for the full text.
+
+================================================================================
+Third-party code
+================================================================================
+
+This project incorporates code derived from third parties. Where a source file
+carries its own license header, that header governs the file; the combined work
+is distributed under CC BY-NC 4.0 (the most restrictive applicable term).
+
+1. Meta Platforms, Inc. — CC BY-NC 4.0
+   - utils/__init__.py
+   Derived from Meta's V-JEPA. Because this component is CC BY-NC 4.0, the
+   combined work is non-commercial. Removing/reimplementing this file is a
+   prerequisite for any more-permissive relicensing.
+
+2. Meta Platforms, Inc. — Apache License 2.0
+   - model/vision_transformer.py
+   - model/layers/attention.py, block.py, decoder_block.py, dino_head.py,
+     drop_path.py, layer_scale.py, mlp.py, patch_embed.py, swiglu_ffn.py,
+     __init__.py
+   Derived from Meta's DINOv2 / V-JEPA transformer building blocks.
+
+3. MIT License
+   - model/layers/gumbel_vector_quantizer.py
+
+================================================================================
+Original code
+================================================================================
+
+All other files (model/create_model.py, model/vision_networks.py,
+model/taxel_networks.py, model/shared_trunk.py, model/head.py,
+model/pos_encoding.py, model/resnet_encoder.py, utils/ssl_utils.py,
+utils/utils_model.py, tactile_fusion.py, extract_features.py, finetune_mae.py,
+and the configs/docs) are original to this project and released under
+CC BY-NC 4.0.

@@ -1,0 +1,22 @@
+# Model weights are distributed separately (see checkpoints/README.md) — too
+# large for git. Track everything else.
+*.pth
+*.pt
+*.ckpt
+
+# Finetune outputs
+logs/
+checkpoints/finetune_*/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# ship the small force-head weights for the demo
+!examples/force_heads/*.pth
