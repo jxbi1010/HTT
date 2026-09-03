@@ -6,7 +6,7 @@ and wrap them as encoders compatible with the probe evaluation system (run_probe
 
 Usage:
     # Option 1: Load encoder and use with run_probe_mlp manually
-    from load_sitr import load_sitr_encoder
+    from baselines.load_sitr import load_sitr_encoder
     
     encoder = load_sitr_encoder(use_cls_token_only=True)
     encoder = encoder.to(device)
@@ -28,7 +28,7 @@ Usage:
     )
     
     # Option 2: Use run_sitr_probe for complete workflow
-    from load_sitr import run_sitr_probe
+    from baselines.load_sitr import run_sitr_probe
     
     probe_results = run_sitr_probe(
         task_type='classification',
@@ -58,8 +58,13 @@ warnings.filterwarnings('ignore', category=FutureWarning, module='timm')
 
 from models.networks import SITR_base
 
+# Make the repo root importable when running this script directly.
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 # Import probe-related functions from run_probe.py
-from run_probe import run_probe_mlp, ProbeDataloaderManager
+from train.run_probe import run_probe_mlp, ProbeDataloaderManager
 from data.create_dataloaders import create_dataloaders_from_config, get_num_classes_from_dataset
 from utils.task_handlers import get_batch_data
 # NOTE: data layer was refactored to the 4probe layout — `load_force_stats`
@@ -894,7 +899,7 @@ if __name__ == "__main__":
             # Delegate sliding to the unified baseline runner (it knows how to
             # build sliding dataloaders, compute class weights, and report
             # macro-F1; SITR is just one of two supported backbones there).
-            from load_baselines import run_baseline_probe
+            from baselines.load_baselines import run_baseline_probe
             probe_results = run_baseline_probe(
                 backbone='sitr',
                 task_type='sliding',

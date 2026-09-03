@@ -1,13 +1,13 @@
 """CLI demo: turn a raw tactile sensor reading into a [B, 192] feature vector.
 
     # vision (gsmini / 9dtact): pass a PNG/JPEG, resized to 224x224 internally
-    python extract_features.py --modality gsmini --input path/to/frame.png
+    python examples/extract_features.py --modality gsmini --input path/to/frame.png
 
     # taxel (xela / tac02): pass a .npy array of shape [T, tactile_dim] or [tactile_dim]
-    python extract_features.py --modality xela --input path/to/reading.npy
+    python examples/extract_features.py --modality xela --input path/to/reading.npy
 
     # no --input: runs on the bundled REAL sample (assets/samples/<modality>_sample.npz)
-    python extract_features.py --modality gsmini
+    python examples/extract_features.py --modality gsmini
 
 The output is the mean-pooled shared-trunk feature — feed it to any downstream
 head. See docs/PREPROCESSING.md for the exact raw-input contract.
@@ -21,6 +21,11 @@ from pathlib import Path
 import numpy as np
 import torch
 
+# Make the repo root importable when running this script directly.
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from htt import (
     ALL_MODALITIES,
     VISION_MODALITIES,
@@ -29,7 +34,7 @@ from htt import (
     encode,
 )
 
-PKG_ROOT = Path(__file__).resolve().parent
+PKG_ROOT = Path(__file__).resolve().parent.parent  # repo root (script lives in examples/)
 
 # Canonical raw shapes the model was pretrained on.
 _VISION_HW = 224

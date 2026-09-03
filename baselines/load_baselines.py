@@ -36,7 +36,12 @@ import yaml
 from omegaconf import OmegaConf
 from torch.utils.tensorboard import SummaryWriter
 
-from run_probe import run_probe_mlp
+# Make the repo root importable when running this script directly.
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from train.run_probe import run_probe_mlp
 from data.create_dataloaders import create_dataloaders_from_config, get_num_classes_from_dataset
 from data.gsmini_force_4probe_50each_dataloader import (
     create_force_4probe_50each_dataloader as create_force_dataloaders_4probe,

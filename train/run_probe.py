@@ -21,6 +21,11 @@ from tqdm import tqdm
 from omegaconf import OmegaConf
 from datetime import datetime
 
+# Make the repo root importable when running this script directly.
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from model.head import MLPHead
 from utils.utils_model import set_all_seeds, adjust_state_dict_keys
 from utils.task_handlers import (

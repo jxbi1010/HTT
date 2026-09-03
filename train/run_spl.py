@@ -33,6 +33,11 @@ from datetime import datetime
 from omegaconf import OmegaConf
 
 # Import dataloader creation function
+# Make the repo root importable when running this script directly.
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from data.create_dataloaders import create_dataloaders_from_config, get_num_classes_from_dataset
 from data.gsmini_force_4probe_50each_dataloader import (
     create_force_4probe_50each_dataloader as create_force_dataloaders_4probe,
@@ -2039,10 +2044,10 @@ if __name__ == "__main__":
 
 
 # # Single run with custom train_data_percentage
-# python run_spl.py --train_data_percentage 0.5
+# python train/run_spl.py --train_data_percentage 0.5
 
 # # Multiple seeds with custom train_data_percentage
-# python run_spl.py --train_data_percentage 0.5 --seeds 10 20 30 40 50
+# python train/run_spl.py --train_data_percentage 0.5 --seeds 10 20 30 40 50
 
 # # Multiple seeds using config file train_data_percentage
-# python run_spl.py --seeds 10 20 30
+# python train/run_spl.py --seeds 10 20 30

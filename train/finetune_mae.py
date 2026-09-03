@@ -36,8 +36,8 @@ index; fixed-length windows (--chunk_size) are sampled from each.
 --------------------------------------------------------------------------------
 USAGE
 --------------------------------------------------------------------------------
-  python finetune_mae.py --sensor_type vision --data_dir /path/to/vision_episodes
-  python finetune_mae.py --sensor_type taxel  --tactile_dim 72 \
+  python train/finetune_mae.py --sensor_type vision --data_dir /path/to/vision_episodes
+  python train/finetune_mae.py --sensor_type taxel  --tactile_dim 72 \
                          --data_dir /path/to/taxel_episodes
 
 Output: checkpoints/finetune_<name>/<timestamp>/{best.pth, checkpoint_step_*.pth}
@@ -64,6 +64,11 @@ import yaml
 from omegaconf import OmegaConf
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
+
+# Make the repo root importable when running this script directly.
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from model.create_model import create_pretrain_model
 from model.taxel_networks import TactileTransformerEncoder, TactileTransformerDecoder

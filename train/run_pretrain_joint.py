@@ -9,7 +9,7 @@ No knowledge-distillation losses (joint training has no "old" model to preserve)
 This is a separate entry point — `run_pretrain.py` is unchanged.
 
 Usage:
-    python run_pretrain_joint.py \\
+    python train/run_pretrain_joint.py \\
         --pretrain_config config/model/pretrain.yaml \\
         --ssl_config     config/algo/pretrain_joint.yaml
 """
@@ -31,6 +31,11 @@ from torch.amp.autocast_mode import autocast
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
+# Make the repo root importable when running this script directly.
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from model.predictor import (
     AlignPooler,
     AlignProjector,
@@ -38,7 +43,7 @@ from model.predictor import (
     MeanEmbeddingPredictor,
 )
 from data.paired_dataset_manager import PairedDatasetManager
-from run_pretrain import PretrainConfig, PretrainTrainer
+from train.pretrain_base import PretrainConfig, PretrainTrainer
 from utils.ssl_utils import compute_mae_loss, random_masking
 
 log = logging.getLogger(__name__)

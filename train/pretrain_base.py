@@ -1209,52 +1209,6 @@ class PretrainTrainer(BaseTrainer):
     
 
 
-def main():
-    """Main function."""
-    parser = argparse.ArgumentParser(description='Multimodal pretraining with shared trunk')
-    parser.add_argument('--pretrain_config', type=str, required=False, default="config/model/pretrain_medium.yaml",
-                       help='Path to pretrain model config file (e.g., config/model/pretrain.yaml)')
-    parser.add_argument('--ssl_config', type=str, required=False, default="config/algo/pretrain.yaml",
-                       help='Path to SSL algorithm config file')
-    parser.add_argument('--checkpoint', type=str, required=False, default=None,
-                       help='Path to checkpoint file to load and run probe evaluation (e.g., checkpoints/pretrain/pretrain_multimodal_20251204_004617/best_model.pth)')
-    parser.add_argument('--resume', type=str, required=False, default=None,
-                       help='Path to checkpoint file to resume training from (e.g., checkpoints/pretrain/pretrain_multimodal_20251204_004617/checkpoint_step_5000.pth)')
-    
-    args = parser.parse_args()
-    
-    # Use fixed default paths for data configs
-    default_data_configs = {
-        '9dtact': 'config/sensor/9dtact_config.yaml',
-        'xela': 'config/sensor/xela_config.yaml',
-        'gsmini': 'config/sensor/gsmini_config.yaml',
-        'tac02': 'config/sensor/tac_config.yaml'
-    }
-    
-    # Map modalities to data configs (only include configs that exist)
-    modality_to_data_config = {}
-    for modality, config_path in default_data_configs.items():
-        if os.path.exists(config_path):
-            modality_to_data_config[modality] = config_path
-        else:
-            print(f"Warning: Data config not found for {modality}: {config_path}")
-    
-    if not modality_to_data_config:
-        raise ValueError("At least one data config must be provided. Check that config files exist in config/sensor/")
-    
-    # Load configuration
-    config = PretrainConfig(
-        pretrain_config_path=args.pretrain_config,
-        ssl_config_path=args.ssl_config,
-        modality_to_data_config=modality_to_data_config
-    )
-    
-    # Create trainer
-    trainer = PretrainTrainer(config)
-    
-    # Start training (with optional resume)
-    trainer.train(resume_from_checkpoint=args.resume)
-
-
-if __name__ == "__main__":
-    main()
+# NOTE: this module is the training-infrastructure library inherited by
+# train/run_pretrain_joint.py (the entry point that produced the released
+# checkpoint). The standalone MAE-only CLI was removed in the public release.

@@ -8,7 +8,7 @@ checkpoints/htt_4sensors_best.pth
 ```
 
 This is the default path used by `htt.load_model`,
-`extract_features.py`, and `finetune_mae.py`.
+`examples/extract_features.py`, and `train/finetune_mae.py`.
 
 ## What it is
 
@@ -22,7 +22,7 @@ This is the default path used by `htt.load_model`,
 
 It is a **slim** checkpoint: only the model weights are kept (optimizer /
 scheduler / predictor states from training were dropped). It works for both
-inference and finetuning — `finetune_mae.py` only reads `model_state_dict`.
+inference and finetuning — `train/finetune_mae.py` only reads `model_state_dict`.
 
 ## How it was produced
 

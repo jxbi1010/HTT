@@ -42,7 +42,7 @@ hf download AllenBi21/HTT htt_4sensors_best.pth --local-dir checkpoints
 ```
 
 This places the file at `checkpoints/htt_4sensors_best.pth` (the default path
-used by `htt.load_model`, `extract_features.py`, and `finetune_mae.py`). See
+used by `htt.load_model`, `examples/extract_features.py`, and `train/finetune_mae.py`). See
 [`checkpoints/README.md`](checkpoints/README.md) for curl/Python alternatives and
 the SHA-256.
 
@@ -79,9 +79,9 @@ seq = encode(encoder, trunk, preprocess(frame), pool="none")  # [1, N, 192]
 **Command line**:
 
 ```bash
-python extract_features.py --modality gsmini --input path/to/frame.png
-python extract_features.py --modality xela   --input path/to/reading.npy
-python extract_features.py --modality gsmini            # uses the bundled real sample
+python examples/extract_features.py --modality gsmini --input path/to/frame.png
+python examples/extract_features.py --modality xela   --input path/to/reading.npy
+python examples/extract_features.py --modality gsmini            # uses the bundled real sample
 python examples/quickstart.py
 ```
 
@@ -113,7 +113,7 @@ behind the released checkpoint (`htt_4sensors_best.pth` = step 34k of this run;
 ~9 h for the full 60k steps on one RTX 4090, ~22 GiB):
 
 ```bash
-python run_pretrain_joint.py \
+python train/run_pretrain_joint.py \
   --pretrain_config config/model/pretrain.yaml \
   --ssl_config     config/algo/pretrain_joint.yaml
 ```
@@ -128,7 +128,7 @@ protocol):
 CKPT=checkpoints/htt_4sensors_best.pth
 for mod in 9dtact xela gsmini tac02; do
   for task in classification force sliding; do
-    python run_probe.py --task $task --modality $mod \
+    python train/run_probe.py --task $task --modality $mod \
       --checkpoint $CKPT --pretrain_config config/model/pretrain.yaml \
       --probe_config config/algo/probe.yaml --finetune
   done
@@ -143,8 +143,8 @@ uses the sliding episodes (`slip/` split) with 3-class bracket labels.
 Per-sensor supervised training with the same encoders, no pretraining:
 
 ```bash
-python run_spl.py --task_type force   --modality xela --seeds 10
-python run_spl.py --task_type sliding --modality xela --seeds 10
+python train/run_spl.py --task_type force   --modality xela --seeds 10
+python train/run_spl.py --task_type sliding --modality xela --seeds 10
 ```
 
 For slip, always compare **macro-F1** (accuracy is inflated by the majority
@@ -152,7 +152,7 @@ class).
 
 ### External baselines (SITR / T3)
 
-`load_baselines.py` runs the same probe pipeline on external vision-tactile
+`baselines/load_baselines.py` runs the same probe pipeline on external vision-tactile
 backbones (image sensors only). Clone the upstream repos + weights under
 `third_party/` (or point `SITR_REPO` / `SITR_CHECKPOINT` / `T3_REPO` /
 `T3_WEIGHTS_DIR` env vars at them):
@@ -161,7 +161,7 @@ backbones (image sensors only). Clone the upstream repos + weights under
 - T3 — repo + `t3_medium` weights (`trunk.pth`, `encoders/`, `decoders/`)
 
 ```python
-from load_baselines import run_baseline_probe
+from baselines.load_baselines import run_baseline_probe
 run_baseline_probe(backbone='sitr', task_type='classification', modality='gsmini', ...)
 ```
 
@@ -174,16 +174,16 @@ run_baseline_probe(backbone='sitr', task_type='classification', modality='gsmini
   silently returns garbage on out-of-distribution inputs.
 - **[docs/TRAINING.md](docs/TRAINING.md)** — full pretraining + downstream
   evaluation on the released dataset, and finetuning the backbone onto your
-  own sensor with `finetune_mae.py`.
+  own sensor with `train/finetune_mae.py`.
 
 ### Finetune onto a new sensor (short version)
 
 ```bash
 # vision sensor — init from a pretrained vision encoder
-python finetune_mae.py --sensor_type vision --data_dir /path/to/episodes
+python train/finetune_mae.py --sensor_type vision --data_dir /path/to/episodes
 
 # taxel sensor — fresh encoder, inherited (frozen) trunk
-python finetune_mae.py --sensor_type taxel --tactile_dim 72 \
+python train/finetune_mae.py --sensor_type taxel --tactile_dim 72 \
     --data_dir /path/to/episodes --freeze_trunk
 ```
 
@@ -216,32 +216,34 @@ per-episode reference subtraction — see the script header for details.
 ## Repository layout
 
 ```
-htt.py                  # library: load_model / preprocess / encode / HTT
-extract_features.py     # CLI: raw reading -> [B, 192] feature
-finetune_mae.py         # finetune the backbone onto your own sensor
-run_pretrain_joint.py   # HTT pretraining (MAE + cross-modal alignment, ours)
-run_pretrain.py         # MAE-only pretraining (single modality)
-run_probe.py            # downstream tasks: classification / force / sliding
-run_spl.py              # supervised-from-scratch baseline
-load_baselines.py       # SITR / T3 external baselines via the probe pipeline
-model/                  # architecture (encoders, shared trunk, decoders, predictors)
-data/                   # dataloaders for every dataset split (+ dataset_paths.py)
-utils/                  # training loops, schedulers, metrics, MAE utilities
-config/
-├── model/pretrain.yaml # architecture config (also taxel_tf / vit for SPL)
-├── algo/               # pretrain_joint / probe / spl configs
-├── sensor/             # per-pair data configs for the tar splits
-└── data/*.yaml         # per-modality normalization + force stats
-assets/
-├── bg_data/            # per-sensor background references for preprocessing
-└── samples/            # one real sample recording per modality
-checkpoints/            # place htt_4sensors_best.pth here (see checkpoints/README.md)
-HTT-dataset/            # place (or symlink) the downloaded dataset here
+htt.py                      # library: load_model / preprocess / encode / HTT
+train/
+├── run_pretrain_joint.py   # HTT pretraining — the released checkpoint's recipe
+├── pretrain_base.py        # trainer library inherited by run_pretrain_joint
+├── run_probe.py            # downstream tasks: classification / force / sliding
+├── run_spl.py              # supervised-from-scratch baseline
+└── finetune_mae.py         # finetune the backbone onto your own sensor
+baselines/
+└── load_baselines.py       # SITR / T3 external baselines (+ load_sitr / load_t3)
 examples/
-├── quickstart.py       # minimal end-to-end example
-├── predict_force.py    # downstream force-prediction example
-└── force_heads/        # pretrained force-regression heads (one per modality)
-docs/                   # ARCHITECTURE / PREPROCESSING / TRAINING
+├── quickstart.py           # minimal end-to-end example
+├── extract_features.py     # CLI: raw reading -> [B, 192] feature
+├── predict_force.py        # downstream force-prediction example
+└── force_heads/            # pretrained force-regression heads (one per modality)
+model/                      # architecture (encoders, shared trunk, decoders, predictors)
+data/                       # dataloaders for every dataset split (+ dataset_paths.py)
+utils/                      # training loops, schedulers, metrics, MAE utilities
+config/
+├── model/pretrain.yaml     # architecture config (also taxel_tf / vit for SPL)
+├── algo/                   # pretrain_joint / probe / spl configs
+├── sensor/                 # per-pair data configs for the tar splits
+└── data/*.yaml             # per-modality normalization + force stats
+assets/
+├── bg_data/                # per-sensor background references for preprocessing
+└── samples/                # one real sample recording per modality
+checkpoints/                # place htt_4sensors_best.pth here (see checkpoints/README.md)
+HTT-dataset/                # place (or symlink) the downloaded dataset here
+docs/                       # ARCHITECTURE / PREPROCESSING / TRAINING
 ```
 
 ## License
