@@ -1,0 +1,14 @@
+# GsMini sensor configuration (image modality)
+data:
+  dataset_type: "tacniq_gsmini"
+  training_type: "images"
+  data_root: "HTT-dataset"  # dataset root; loaders resolve pretrain/ or classification/ subdirs (see data/dataset_paths.py)
+
+  random_seed: 42
+
+  image_chunk_size: 2
+  tactile_chunk_size: 20
+
+  apply_background_subtraction: true
+  normalize_images: true
+  normalize_tactile: true

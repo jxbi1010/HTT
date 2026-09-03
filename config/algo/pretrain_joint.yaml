@@ -1,0 +1,105 @@
+# Joint multimodal pretraining — the exact recipe behind the released
+# checkpoint `htt_4sensors_best.pth` (step 34,000 of this run).
+#
+# Per-step loss:
+#   L = Σ_m w_m · MAE(m)                                   (4 reconstruction losses)
+#     + Σ_dir α_dir(step) · Align(dir)                     (4 cross-modal directions)
+#
+# Alignment runs from step 0 (no MAE-only warmup) with a linear coefficient
+# ramp over the first 10k steps. Alignment gradients update the shared trunk
+# and predictors only (`alignment_stop_grad_encoders: true`); the encoders
+# learn from MAE reconstruction alone. Target embeddings are detached
+# (`alignment_detach_target: true`) — without this the model trivializes the
+# target and downstream quality collapses.
+#
+# Usage:
+#   python run_pretrain_joint.py \
+#     --pretrain_config config/model/pretrain.yaml \
+#     --ssl_config     config/algo/pretrain_joint.yaml
+#
+# Data: the paired pretrain shards of the released dataset, expected at
+# ./HTT-dataset (see data/dataset_paths.py).
+
+alignment_modality_pairs:
+  - ["9dtact", "xela"]
+  - ["gsmini", "tac02"]
+
+algorithm:
+  optimizer:
+    type: "AdamW"
+    lr: 4e-4
+    weight_decay: 0.05
+    kwargs: {}
+
+  lr_scheduler:
+    type: "LinearWarmupCosineDecayLR"
+    kwargs:
+      warmup_steps: 2000
+      warmup_epochs: null
+      eta_min: 3e-6
+      warmup_start_lr: 3e-6
+
+  kwargs:
+    # ---- MAE side (per-encoder mask ratios live in
+    # config/model/pretrain.yaml under encoders.<modality>.mask_ratio) ----
+    mask_ratio: 0.5                # Fallback only; per-encoder ratios take precedence
+    norm_pix_loss: true
+    use_weighted_mae_loss: false
+    saliency_weight: 2.0
+    gradient_loss_coef: 0.0
+    sigreg_loss_coef: 0.0
+    sigreg_knots: 17
+    sigreg_num_proj: 1024
+
+    # Per-modality MAE loss weights. Taxel xela up-weighted (hardest to drive
+    # down), vision gsmini down-weighted (otherwise dominates the loss).
+    mae_weights:
+      xela:   1.5
+      tac02:  1.0
+      9dtact: 1.0
+      gsmini: 0.7
+
+    # ---- Alignment side ----
+    # Asymmetric per-direction coefficients: the taxel→vision direction gets
+    # 2× the weight of vision→taxel.
+    alignment_loss_coef:
+      9dtact_to_xela: 0.01
+      xela_to_9dtact: 0.02
+      gsmini_to_tac02: 0.01
+      tac02_to_gsmini: 0.02
+    alignment_warmup_steps: 0          # Alignment active from step 0 ...
+    alignment_coef_warmup_steps: 10000 # ... with a linear coef ramp over 10k steps
+    alignment_stop_grad_encoders: true # Alignment updates trunk+predictors only
+    alignment_detach_target: true      # Stop-grad on target embeddings (critical)
+    predictor:
+      depth: 3
+      num_heads: 3
+      mlp_ratio: 4.0
+    alignment_mask_ratios:
+      9dtact: { source: 0.5,  target: 0.9 }
+      xela:   { source: 0.4,  target: 0.8 }
+      gsmini: { source: 0.75, target: 0.9 }
+      tac02:  { source: 0.6,  target: 0.8 }
+
+training:
+  compile_model: false             # torch.compile incompatible with some predictor heads
+  use_amp: true
+  gradient_accumulation_steps: 1
+  patience: 5
+  gradient_clip_val: 1.0
+  batch_size: 512                  # single RTX 4090 (~22 GiB peak)
+  num_workers: 0
+  probe_data_percentage: 1.0
+  total_steps: 60000               # released checkpoint = step 34,000
+  val_interval: 2000
+  checkpoint_save_interval: 2000
+  modality_weights:
+    9dtact: 1.0
+    xela: 1.0
+    gsmini: 1.0
+    tac02: 1.0
+
+logging:
+  log_dir: "logs/pretrain_joint"
+  save_dir: "checkpoints/pretrain_joint"
+  log_interval: 10

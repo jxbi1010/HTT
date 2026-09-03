@@ -1,0 +1,13 @@
+# Tac02 sensor configuration (tactile modality)
+data:
+  dataset_type: "tacniq_gsmini"
+  training_type: "tactile"
+  data_root: "HTT-dataset"  # dataset root; loaders resolve pretrain/ or classification/ subdirs (see data/dataset_paths.py)
+
+  random_seed: 42
+
+  tactile_chunk_size: 20
+
+  apply_background_subtraction: true
+  normalize_tactile: true
+  apply_fft: false

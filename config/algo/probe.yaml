@@ -1,0 +1,87 @@
+# Probe Evaluation Configuration
+# Configuration for running probe MLP evaluation on pretrained models
+# Supports classification, force, and pose tasks
+
+# Probe task configuration
+probe:
+  # Task type: 'classification', 'force', or 'sliding' (bracket labels on gsmini sliding data)
+  task_type: "classification"
+  
+  # Modality to probe (e.g., '9dtact', 'xela', 'gsmini', 'tac02')
+  modality: "gsmini"
+  
+  # Probe training hyperparameters
+  probe_total_steps: 2000   # Total number of training steps
+  eval_steps: 100           # Validation interval in steps (validate every N steps, like run_spl)
+  probe_lr: 5e-5            # Learning rate for probe training
+  probe_patience: 5         # Early-stop patience (val checks without improvement)
+  probe_weight_decay: 1e-3  # Adam weight decay for probe head
+  probe_seeds: [10]  # Random seeds for multiple trials
+  
+  # Learning rate scheduler configuration
+  lr_scheduler:
+    type: "LinearWarmupCosineDecayLR"  # Linear warmup followed by cosine decay
+    kwargs:
+      # Warmup configuration (warmup_steps takes precedence if both are provided)
+      warmup_steps: 50     # Number of steps for linear warmup (if null, uses warmup_epochs)
+      warmup_epochs: null       # Number of epochs for warmup (used if warmup_steps is null)
+      eta_min: 1e-5          # Minimum learning rate for cosine decay
+      warmup_start_lr: 1e-5   # Starting learning rate for warmup
+  
+  # Data configuration
+  batch_size: 256            # Batch size for probe dataloaders
+  num_workers: 4            # Number of workers for data loading
+  probe_data_percentage: 1.0  # Percentage of training data to use (1.0 = 100%)
+  
+  # For classification tasks
+  classification:
+    # Mapping of modalities to their data config files
+    # Automatically selected based on the 'modality' setting above
+    data_configs:
+      9dtact: "config/sensor/9dtact_config.yaml"
+      gsmini: "config/sensor/gsmini_config.yaml"
+      xela: "config/sensor/xela_config.yaml"
+      tac02: "config/sensor/tac_config.yaml"
+    # Fallback data config (used if modality not in data_configs)
+    data_config: "config/sensor/xela_config.yaml"  # Default/fallback path
+    
+  # For force tasks (force estimation)
+  force:
+    # Data roots for force data (force_data_h5 or processed .npz for gsmini)
+    data_roots:              # Force task roots (released force/ split; static mode)
+      9dtact: "HTT-dataset/force/9dtact/processed"
+      gsmini: "HTT-dataset/force/gsmini/processed"
+      xela: "HTT-dataset/force/xela/processed"
+      tac02: "HTT-dataset/force/tac02/processed"
+    # sliding_data_roots:     # Optional: slip task roots; default is HTT-dataset/slip/<sensor>/processed
+    #   xela: "HTT-dataset/slip/xela/processed"
+    config_dir: "config/data"  # Directory containing sensor config YAML files
+    mode_filter: static         # For gsmini 4probe: "static" or "sliding" only; null = use all
+    # compute_friction_mu: null # optional: add friction_mu to batches; null = auto (true when mode_filter is sliding)
+    # friction_mu_eps: 0.001     # optional: μ on physical |n| after ref subtract+clip; default 1e-3
+    # labeled_data_root: null   # optional: root for *.labeled.npz (default: ../sliding_labeled next to processed)
+    # load_sliding_labels: null # optional: sliding_label, labeled_mus, labeled_c_plus; null = auto (true when sliding)
+    # strict_labeled: false     # optional: skip episodes with missing/mismatched .labeled.npz
+    # num_sliding_classes: 3    # optional: bracket states 0..C-1 (for task_type: sliding)
+    normalize_targets: true   # Whether targets are normalized (for denormalization)
+    output_dim: 1           # Output dimension (1 for scalar force; 6 for gsmini 6D force)
+    min_force: -20.0          # Minimum valid force threshold
+    max_force: 20.0           # Maximum valid force threshold
+    
+  # For pose tasks (pose estimation)
+  pose:
+    # Data roots for pose data (pose_data_h5)
+    data_roots:              # Dictionary mapping modality to data root
+      9dtact: "data/pose_data_h5/9dtact_pose_h5"
+      gelsight: "data/pose_data_h5/gelsight_pose_h5"
+      xela: "data/pose_data_h5/xela_pose_h5"
+      tac02: "data/pose_data_h5/tac02_pose_h5"
+    config_dir: "config/data"  # Directory containing sensor config YAML files
+    # Note: Pose targets (delta_translation and delta_rotation) are already normalized
+    # during data preprocessing, so no denormalization is needed
+
+# Logging parameters
+logging:
+  log_dir: "logs/probe"     # Log directory for TensorBoard
+  run_name: null            # Optional run name (if None, uses timestamp)
+

@@ -20,3 +20,15 @@ __pycache__/
 
 # ship the small force-head weights for the demo
 !examples/force_heads/*.pth
+
+# Released dataset (download separately, see README "Dataset")
+HTT-dataset
+HTT-dataset/
+
+# External baseline repos + weights (see README "Baselines")
+third_party/
+
+# Training outputs
+checkpoints/pretrain_joint*/
+checkpoints/supervised/
+checkpoints/probe*/

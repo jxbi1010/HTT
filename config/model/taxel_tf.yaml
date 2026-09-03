@@ -1,0 +1,35 @@
+# Unified Transformer model config for tactile sensors (Tacniq, Xela, etc.)
+# Model type: 'transformer'
+type: 'transformer'
+
+# Data dimensions
+# Sensor-specific dimensions (automatically selected based on dataset_type)
+xela_dim: 72   # For Xela sensor (xela_9dtact dataset)
+tac_dim: 66    # For Tacniq sensor (tacniq_gsmini dataset)
+# tactile_dim will be automatically set based on dataset_type
+patch_size: 4
+stride: 4
+
+# Transformer configuration
+# 3 layers to match the per-modality encoder depth in config/model/pretrain.yaml
+# (encoder_depth=3 for the joint-MAE pretrained backbone), so the SPL from-scratch
+# baseline trains the same-sized backbone the probe loads from a pretrained ckpt.
+transformer_layers: 3
+num_heads: 3
+hidden_dim: 192
+
+# Classifier (MLP head) — matched to utils/task_handlers.create_probe_head, which
+# builds MLPHead(embed_dim, num_classes, dropout=0.1) using MLPHead's default
+# hidden_dim=256. Keeping SPL's classification head identical to the probe head
+# means the only thing differing between SPL and the probe is the backbone init
+# (random vs pretrained).
+classifier:
+  hidden_dim: 256
+  dropout: 0.1
+
+# Decoder configuration for MAE SSL training
+decoder:
+  decoder_embed_dim: 192  # Decoder embedding dimension
+  decoder_depth: 2  # Number of decoder transformer blocks
+  decoder_num_heads: 3  # Number of attention heads in decoder
+

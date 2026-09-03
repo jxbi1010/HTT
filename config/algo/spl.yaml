@@ -1,0 +1,75 @@
+# Supervised Learning Algorithm Configuration
+# Supervised learning for classification/force/pose tasks
+# This file contains only algorithm-specific parameters
+# Data and model configurations are loaded from separate files
+
+algorithm:
+  # Optimizer configuration
+  optimizer:
+    type: "AdamW"
+    lr: 3e-4
+    weight_decay: 0.005
+    kwargs: {}  # Additional optimizer arguments
+  
+  # Learning rate scheduler (optional)
+  lr_scheduler:
+    type: "CosineAnnealingLR"
+    kwargs:
+      T_max: 200
+      eta_min: 1e-6
+
+# Data parameters (will be merged with sensor config)
+data:
+  train_data_percentage: 1.0 # Percentage of training data to use (0.0 to 1.0). If 0.5, randomly selects 50% of the split training dataset.
+  num_workers: 4  # Number of worker processes for data loading
+  pin_memory: true  # Pin memory for faster GPU transfer (should be true for GPU training)
+  persistent_workers: true  # Keep workers alive between epochs (set to false to avoid hanging issues)
+  prefetch_factor: 10  # Number of batches to prefetch per worker (2 is good for most cases)
+
+# Training parameters (will be merged with data config)
+training:
+  num_epochs: 200                  # Number of training epochs
+  compile_model: false             # Model compilation for PyTorch 2.0+ 
+  use_amp: true                    # Automatic Mixed Precision
+  gradient_accumulation_steps: 1   # Gradient accumulation
+  max_steps: 10000       # total training steps target
+  eval_steps: 100        # evaluate roughly every 100 steps
+  patience: 5                     # Early stopping patience
+  gradient_clip_val: 1.0           # Gradient clipping value to prevent NaN
+
+# Logging parameters (will be merged with data config)
+logging:
+  log_dir: "logs/supervised"          # Log directory
+  save_dir: "checkpoints/supervised" # Checkpoint directory
+  log_interval: 10                 # Logging interval (in batches)
+  save_interval: 10                # Checkpoint save interval (in epochs)
+
+# Force task configuration (for force estimation)
+force:
+  # Modality to use for regression (e.g., 'xela', 'tac02', 'gsmini', '9dtact')
+  # For gsmini: uses processed .npz episodes (tactile only -> 3D force: normal+shear)
+  modality: "gsmini"
+  backbone: "vit"  # Optional: use ResNet-18 instead of ViT (set to "resnet18" to enable)
+  data_root: null  # optional override; defaults to HTT-dataset/force/<modality>/processed (or slip/ for the sliding task)
+  # Note: For other modalities, data root is auto-constructed as data/tar_data/{modality}_force/
+  config_dir: "config/data"  # Directory containing sensor config YAML files
+  # For gsmini: clip force (dims 0,1=shear, dim 2=normal) to [force_clip_min, force_clip_max]
+  force_clip_min: -20.0
+  force_clip_max: 20.0
+  # For gsmini 4probe: optionally use only "static" or "sliding" data (null = use all)
+  mode_filter: static
+  # compute_friction_mu: null # optional: add friction_mu to batches; null = auto (true when mode_filter is sliding)
+  # friction_mu_eps: 0.001     # optional: μ on physical |n| after ref subtract+clip; default 1e-3
+  # labeled_data_root: null   # optional: root for *.labeled.npz (default: ../sliding_labeled next to processed)
+  # load_sliding_labels: null # optional: sliding_label, labeled_mus, labeled_c_plus; null = auto (true when sliding)
+  # strict_labeled: false     # optional: skip episodes with missing/mismatched .labeled.npz
+  # num_sliding_classes: 3    # optional: for task_type sliding — bracket labels 0..C-1
+
+# Pose task configuration (for pose estimation)
+pose:
+  # Modality to use for pose estimation (e.g., 'xela', 'tac02', 'gelsight', '9dtact')
+  modality: "xela"
+  # Note: Data root is auto-constructed as data/tar_data/{modality}_pose/ based on modality
+  config_dir: "config/data"  # Directory containing sensor config YAML files
+  # Note: Pose targets (delta_translation and delta_rotation) are already normalized
+  # during data preprocessing, so no denormalization is needed
