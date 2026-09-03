@@ -39,21 +39,23 @@ torch.save(slim, "htt_4sensors_best.pth")
 
 ## Download
 
-Hosted on the Hugging Face Hub: **https://huggingface.co/AllenBi21/HTT**
+Hosted on the Hugging Face Hub (single repo for dataset & model):
+**https://huggingface.co/datasets/AllenBi21/HTT-dataset**
 
 ```bash
 # Option A — hf CLI (pip install huggingface_hub)
-hf download AllenBi21/HTT htt_4sensors_best.pth --local-dir checkpoints
+hf download AllenBi21/HTT-dataset htt_4sensors_best.pth --repo-type dataset --local-dir checkpoints
 
 # Option B — curl (direct link)
 curl -L -o checkpoints/htt_4sensors_best.pth \
-  https://huggingface.co/AllenBi21/HTT/resolve/main/htt_4sensors_best.pth
+  https://huggingface.co/datasets/AllenBi21/HTT-dataset/resolve/main/htt_4sensors_best.pth
 ```
 
 ```python
 # Option C — from Python
 from huggingface_hub import hf_hub_download
-hf_hub_download("AllenBi21/HTT", "htt_4sensors_best.pth", local_dir="checkpoints")
+hf_hub_download("AllenBi21/HTT-dataset", "htt_4sensors_best.pth",
+                repo_type="dataset", local_dir="checkpoints")
 ```
 
 Integrity (SHA-256):

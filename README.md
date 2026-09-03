@@ -3,8 +3,8 @@
 </p>
 
 [![arXiv](https://img.shields.io/badge/ArXiv-2606.29948-b31b1b.svg)](https://arxiv.org/abs/2606.29948)
-[![Model](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Model-yellow.svg)](https://huggingface.co/AllenBi21/HTT)
-[![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Dataset-yellow.svg)](https://huggingface.co/datasets/AllenBi21/HTT-dataset)
+[![Project Page](https://img.shields.io/badge/Project-Page-9cf.svg)](https://jxbi1010.github.io/htt-gh-page/)
+[![Dataset & Model](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Dataset%20%26%20Model-yellow.svg)](https://huggingface.co/datasets/AllenBi21/HTT-dataset)
 [![Status](https://img.shields.io/badge/Status-Under%20Review-blue.svg)](https://jxbi1010.github.io/htt-gh-page/)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-green.svg)](LICENSE)
 
@@ -17,17 +17,12 @@ This is the official code repo of the paper:
             Heterogeneous Tactile Transformer
         </a><br/>
     </strong>
-    Jianxin Bi <sup>1†</sup>, Qiang Wang <sup>1</sup>, Jayaram Reddy <sup>1</sup>, Kelvin Lin <sup>1</sup>,
-    Soibkhon Khajikhanov <sup>1</sup>, Ruihan Gao <sup>2</sup>, Harold Soh <sup>1,3†</sup><br>
+    Jianxin&nbsp;Bi<sup>1†</sup>, Qiang&nbsp;Wang<sup>1</sup>, Jayaram&nbsp;Reddy<sup>1</sup>, Kelvin&nbsp;Lin<sup>1</sup>,
+    Soibkhon&nbsp;Khajikhanov<sup>1</sup>, Ruihan&nbsp;Gao<sup>2</sup>, Harold&nbsp;Soh<sup>1,3†</sup><br>
     <sup>1</sup><em>National University of Singapore</em> ·
     <sup>2</sup><em>Carnegie Mellon University</em> ·
     <sup>3</sup><em>Smart Systems Institute, NUS</em>
 </td></tr></table>&nbsp;
-
-**[[Arxiv]](https://arxiv.org/abs/2606.29948)**
-**[[Project Page]](https://jxbi1010.github.io/htt-gh-page/)**
-**[[Model]](https://huggingface.co/AllenBi21/HTT)**
-**[[Dataset]](https://huggingface.co/datasets/AllenBi21/HTT-dataset)**
 
 # 🧾 Introduction
 
@@ -58,12 +53,11 @@ python -m venv .venv && source .venv/bin/activate     # or conda
 pip install -r requirements.txt
 
 # checkpoint (~69 MB) — lands at checkpoints/htt_4sensors_best.pth
-hf download AllenBi21/HTT htt_4sensors_best.pth --local-dir checkpoints
+hf download AllenBi21/HTT-dataset htt_4sensors_best.pth --repo-type dataset --local-dir checkpoints
 ```
 
-The checkpoint is also bundled in the
-[dataset repo](https://huggingface.co/datasets/AllenBi21/HTT-dataset), so
-downloading the dataset gets you model + data in one place.
+Model and dataset live in a single Hub repo:
+[AllenBi21/HTT-dataset](https://huggingface.co/datasets/AllenBi21/HTT-dataset).
 
 # 🚀 Quickstart
 
