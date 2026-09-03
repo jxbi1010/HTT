@@ -2,11 +2,11 @@
   <h1 align="center">HTT: Heterogeneous Tactile Transformer</h1>
 </p>
 
-[![pytorch](https://img.shields.io/badge/Python-PyTorch-orange.svg)](https://www.pytorch.org)
-[![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-green.svg)](LICENSE)
 [![arXiv](https://img.shields.io/badge/ArXiv-2606.29948-b31b1b.svg)](https://arxiv.org/abs/2606.29948)
 [![Model](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Model-yellow.svg)](https://huggingface.co/AllenBi21/HTT)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Dataset-yellow.svg)](https://huggingface.co/datasets/AllenBi21/HTT-dataset)
+[![Status](https://img.shields.io/badge/Status-Under%20Review-blue.svg)](https://jxbi1010.github.io/htt-gh-page/)
+[![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-green.svg)](LICENSE)
 
 This is the official code repo of the paper:
 
@@ -60,6 +60,10 @@ pip install -r requirements.txt
 # checkpoint (~69 MB) — lands at checkpoints/htt_4sensors_best.pth
 hf download AllenBi21/HTT htt_4sensors_best.pth --local-dir checkpoints
 ```
+
+The checkpoint is also bundled in the
+[dataset repo](https://huggingface.co/datasets/AllenBi21/HTT-dataset), so
+downloading the dataset gets you model + data in one place.
 
 # 🚀 Quickstart
 
