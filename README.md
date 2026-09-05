@@ -5,7 +5,7 @@
 [![arXiv](https://img.shields.io/badge/ArXiv-2606.29948-b31b1b.svg)](https://arxiv.org/abs/2606.29948)
 [![Project Page](https://img.shields.io/badge/Project-Page-9cf.svg)](https://jxbi1010.github.io/htt-gh-page/)
 [![Dataset & Model](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Dataset%20%26%20Model-yellow.svg)](https://huggingface.co/datasets/AllenBi21/HTT-dataset)
-[![Status](https://img.shields.io/badge/Status-Accepted%20CoRL%202026-brightgreen.svg)](https://jxbi1010.github.io/htt-gh-page/)
+[![Status](https://img.shields.io/badge/Status-CoRL%202026-brightgreen.svg)](https://jxbi1010.github.io/htt-gh-page/)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-green.svg)](LICENSE)
 
 This is the official code repo of the paper:
