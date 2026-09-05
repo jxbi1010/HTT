@@ -8,7 +8,7 @@
 [![Status](https://img.shields.io/badge/Accepted-CoRL%202026-brightgreen.svg)](https://jxbi1010.github.io/htt-gh-page/)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-green.svg)](LICENSE)
 
-This is the official code repo of the paper:
+This is the official code repo of CoRL 2026 accepted paper:
 
 <p align="center">&nbsp;<table><tr><td>
     <p align="center">
